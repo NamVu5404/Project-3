@@ -1,6 +1,7 @@
 package com.javaweb.service.impl;
 
 import com.javaweb.entity.AssignmentBuildingEntity;
+import com.javaweb.exception.MyException;
 import com.javaweb.model.dto.AssignmentBuildingDTO;
 import com.javaweb.repository.AssignmentBuildingRepository;
 import com.javaweb.repository.BuildingRepository;
@@ -31,8 +32,8 @@ public class AssignmentBuildingService implements IAssignmentBuildingService {
 
         for (Long staffId : assignmentBuildingDTO.getStaffs()) {
             AssignmentBuildingEntity assignmentBuildingEntity = new AssignmentBuildingEntity();
-            assignmentBuildingEntity.setStaffs(userRepository.findById(staffId).get());
-            assignmentBuildingEntity.setBuildings(buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).get());
+            assignmentBuildingEntity.setStaffs(userRepository.findById(staffId).orElseThrow(() -> new MyException("Staffs not found!")));
+            assignmentBuildingEntity.setBuildings(buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).orElseThrow(() -> new MyException("Building not found!")));
             assignmentBuildingRepository.save(assignmentBuildingEntity);
         }
     }
