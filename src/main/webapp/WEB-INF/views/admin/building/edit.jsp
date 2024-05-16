@@ -43,7 +43,7 @@
             </div><!-- /.page-header -->
 
             <div class="row">
-                <form:form modelAttribute="buildingEdit" action="${buildingEditUrl}" method="GET" id="editForm">
+                <form:form modelAttribute="model" action="${buildingEditUrl}" method="GET" id="editForm">
                     <div class="col-xs-12">
                         <form class="form-horizontal" role="form" style="font-family: 'Times New Roman', Times, serif;">
                             <div class="form-group hidden">
@@ -273,18 +273,34 @@
                                 </div>
                             </div>
 
+                            <div class="form-group">
+                                <label class="col-sm-3 no-padding-right">Hình đại diện</label>
+                                <form:input class="col-sm-3 no-padding-right" type="file" id="uploadImage" path="avatar" />
+                                <div class="col-sm-9">
+                                    <c:if test="${not empty model.avatar}">
+                                        <c:set var="imagePath" value="/repository${model.avatar}"/>
+                                        <img src="${imagePath}" id="viewImage" width="300px" height="300px"
+                                             style="margin-top: 50px">
+                                    </c:if>
+                                    <c:if test="${empty model.avatar}">
+                                        <img src="/admin/image/default.png" id="viewImage" width="300px" height="300px">
+                                    </c:if>
+                                </div>
+                            </div>
+
+
                             <div class="form-group" style="margin-bottom: 100px">
                                 <label class="col-xs-3"></label>
 
                                 <div class="col-sm-9">
-                                    <c:if test="${empty buildingEdit.id}">
+                                    <c:if test="${empty model.id}">
                                         <button type="button" class="btn btn-sm btn-primary"
                                                 id="btnAddOrUpdateBuilding">
                                             Thêm tòa nhà
                                         </button>
                                     </c:if>
 
-                                    <c:if test="${not empty buildingEdit.id}">
+                                    <c:if test="${not empty model.id}">
                                         <button type="button" class="btn btn-sm btn-warning"
                                                 id="btnAddOrUpdateBuilding">
                                             Sửa tòa nhà
@@ -307,6 +323,9 @@
 </div><!-- /.main-content -->
 
 <script>
+    var imageBase64 = '';
+    var imageName = '';
+
     $(`#btnAddOrUpdateBuilding`).click(() => {
         var data = {};
         var typeCode = [];
@@ -317,8 +336,14 @@
             } else {
                 typeCode.push(item.value);
             }
+
+            if ('' !== imageBase64) {
+                data['imageBase64'] = imageBase64;
+                data['imageName'] = imageName;
+            }
         })
         data.typeCode = typeCode;
+
         if (typeCode.length === 0) {
             return alert("Loại tòa nhà không được thiếu");
         } else if (!data.rentArea || data.rentArea.trim().length === 0) {
@@ -331,6 +356,7 @@
     })
 
     const btnAddOrUpdate = (data) => {
+        $('#loading_image').show();
         $.ajax({
             type: "POST",
             url: "${buildingAPI}",
@@ -345,6 +371,27 @@
                 console.log(response);
             }
         });
+    }
+
+    $('#uploadImage').change(function (event) {
+        var reader = new FileReader();
+        var file = $(this)[0].files[0];
+        reader.onload = function (e) {
+            imageBase64 = e.target.result;
+            imageName = file.name;
+        };
+        reader.readAsDataURL(file);
+        openImage(this, "viewImage");
+    });
+
+    function openImage(input, imageView) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#' + imageView).attr('src', reader.result);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
     }
 </script>
 </body>

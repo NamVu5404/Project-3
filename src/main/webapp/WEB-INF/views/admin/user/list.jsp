@@ -195,7 +195,7 @@
                 window.location.href = "<c:url value='/admin/user-list?message=delete_success'/>";
             },
             error: function (res) {
-                console.log(res);
+                // console.log(res);
                 window.location.href = "<c:url value='/admin/user-list?message=error_system'/>";
             }
         });

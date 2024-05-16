@@ -25,7 +25,7 @@ public enum districtCode {
     }
 
     public static Map<String, String> district() {
-        Map<String, String> listDistrict = new HashMap<String, String>();
+        Map<String, String> listDistrict = new HashMap<>();
         for(districtCode item : districtCode.values()) {
             listDistrict.put(item.toString(), item.getDistrictName());
         }

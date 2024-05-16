@@ -4,6 +4,7 @@ import com.javaweb.entity.BuildingEntity;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.repository.custom.BuildingRepositoryCustom;
 import com.javaweb.utils.StringUtils;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -90,18 +91,31 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
     }
 
     @Override
-    public List<BuildingEntity> findAll(BuildingSearchRequest builder) {
-        StringBuilder sql = new StringBuilder("SELECT b.* " + "FROM Building b ");
-        queryJoin(builder, sql);
-
-        StringBuilder where = new StringBuilder("WHERE 1 = 1 ");
-        queryWhereNormal(builder, where);
-        queryWhereSpecial(builder, where);
-        sql.append(where);
-        sql.append(" GROUP BY b.id");
+    public List<BuildingEntity> findAll(BuildingSearchRequest builder, Pageable pageable) {
+        StringBuilder sql = new StringBuilder(buildQueryFilter(builder))
+                .append(" LIMIT ").append(pageable.getPageSize()).append("\n")
+                .append(" OFFSET ").append(pageable.getOffset());
 
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
         return query.getResultList();
     }
 
+    @Override
+    public int countTotalItem(BuildingSearchRequest builder) {
+        String sql = buildQueryFilter(builder);
+        Query query = entityManager.createNativeQuery(sql.toString());
+        return query.getResultList().size();
+    }
+
+    private String buildQueryFilter(BuildingSearchRequest builder) {
+        StringBuilder sql = new StringBuilder("SELECT b.* FROM Building b ");
+        queryJoin(builder, sql);
+
+        StringBuilder where = new StringBuilder("WHERE 1 = 1 ");
+        queryWhereNormal(builder, where);
+        queryWhereSpecial(builder, where);
+        sql.append(where).append(" GROUP BY b.id ");
+
+        return sql.toString();
+    }
 }

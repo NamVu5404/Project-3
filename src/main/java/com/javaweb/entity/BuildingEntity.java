@@ -95,6 +95,9 @@ public class BuildingEntity extends BaseEntity {
     @Column(name = "type")
     private String typeCode;
 
+    @Column(name = "avatar")
+    private String avatar;
+
     @OneToMany(mappedBy = "buildings", fetch = FetchType.LAZY)
     private List<AssignmentBuildingEntity> assignmentBuildingEntities = new ArrayList<>();
 
