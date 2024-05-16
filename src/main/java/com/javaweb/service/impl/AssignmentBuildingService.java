@@ -32,8 +32,10 @@ public class AssignmentBuildingService implements IAssignmentBuildingService {
 
         for (Long staffId : assignmentBuildingDTO.getStaffs()) {
             AssignmentBuildingEntity assignmentBuildingEntity = new AssignmentBuildingEntity();
-            assignmentBuildingEntity.setStaffs(userRepository.findById(staffId).orElseThrow(() -> new MyException("Staffs not found!")));
-            assignmentBuildingEntity.setBuildings(buildingRepository.findById(assignmentBuildingDTO.getBuildingId()).orElseThrow(() -> new MyException("Building not found!")));
+            assignmentBuildingEntity.setStaffs(userRepository.findById(staffId)
+                    .orElseThrow(() -> new MyException("Staffs not found!")));
+            assignmentBuildingEntity.setBuildings(buildingRepository.findById(assignmentBuildingDTO.getBuildingId())
+                    .orElseThrow(() -> new MyException("Building not found!")));
             assignmentBuildingRepository.save(assignmentBuildingEntity);
         }
     }
