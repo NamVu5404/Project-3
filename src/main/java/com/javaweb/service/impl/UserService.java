@@ -9,7 +9,6 @@ import com.javaweb.model.dto.PasswordDTO;
 import com.javaweb.model.dto.UserDTO;
 import com.javaweb.model.response.ResponseDTO;
 import com.javaweb.model.response.StaffResponseDTO;
-import com.javaweb.repository.AssignmentBuildingRepository;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.RoleRepository;
 import com.javaweb.repository.UserRepository;
@@ -45,7 +44,7 @@ public class UserService implements IUserService {
     private UserConverter userConverter;
 
     @Autowired
-    private AssignmentBuildingRepository assignmentBuildingRepository;
+    private BuildingRepository buildingRepository;
 
     @Override
     public UserDTO findOneByUserNameAndStatus(String name, int status) {
@@ -202,8 +201,9 @@ public class UserService implements IUserService {
     }
 
     private List<Long> getAssignedStaffIds(Long buildingId) {
-        return assignmentBuildingRepository.findByBuildings_Id(buildingId).stream()
-                .map(it -> it.getStaffs().getId())
+        return buildingRepository.findById(buildingId)
+                .orElseThrow(() -> new MyException("Building not found!"))
+                .getStaffs().stream().map(UserEntity::getId)
                 .collect(Collectors.toList());
     }
 

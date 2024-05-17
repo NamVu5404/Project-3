@@ -2,12 +2,10 @@ package com.javaweb.service.impl;
 
 import com.javaweb.converter.BuildingConverter;
 import com.javaweb.entity.BuildingEntity;
-import com.javaweb.entity.RentAreaEntity;
 import com.javaweb.exception.MyException;
 import com.javaweb.model.dto.BuildingDTO;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.model.response.BuildingSearchResponse;
-import com.javaweb.repository.AssignmentBuildingRepository;
 import com.javaweb.repository.BuildingRepository;
 import com.javaweb.repository.RentAreaRepository;
 import com.javaweb.service.IBuildingService;
@@ -16,11 +14,10 @@ import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -34,9 +31,6 @@ public class BuildingService implements IBuildingService {
 
     @Autowired
     private BuildingConverter buildingConverter;
-
-    @Autowired
-    private AssignmentBuildingRepository assignmentBuildingRepository;
 
     @Autowired
     private UploadFileUtils uploadFileUtils;
@@ -74,17 +68,8 @@ public class BuildingService implements IBuildingService {
             buildingEntity.setAvatar(foundBuilding.getAvatar());
         }
         saveThumbnail(buildingDTO, buildingEntity);
-        buildingRepository.save(buildingEntity);
 
-        if (buildingDTO.getId() != null) { // update
-            rentAreaRepository.deleteByBuildingIdIn(Arrays.asList(buildingDTO.getId()));
-        }
-        Arrays.stream(buildingDTO.getRentArea().split(",")).forEach(it -> {
-            RentAreaEntity rentAreaEntity = new RentAreaEntity();
-            rentAreaEntity.setBuilding(buildingEntity);
-            rentAreaEntity.setValue(Long.parseLong(it.trim()));
-            rentAreaRepository.save(rentAreaEntity);
-        });
+        buildingRepository.save(buildingEntity);
     }
 
     private void saveThumbnail(BuildingDTO buildingDTO, BuildingEntity buildingEntity) {
@@ -112,8 +97,11 @@ public class BuildingService implements IBuildingService {
                 throw new MyException("Building not found!");
             }
 
-            rentAreaRepository.deleteByBuildingIdIn(ids);
-            assignmentBuildingRepository.deleteByBuildings_IdIn(ids);
+            List<BuildingEntity> buildings = buildingRepository.findAllById(ids);
+            for (BuildingEntity building : buildings) {
+                building.getStaffs().clear();
+                buildingRepository.save(building);
+            }
             buildingRepository.deleteByIdIn(ids);
         }
     }
