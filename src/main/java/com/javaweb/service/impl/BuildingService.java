@@ -69,6 +69,10 @@ public class BuildingService implements IBuildingService {
         }
         saveThumbnail(buildingDTO, buildingEntity);
 
+//        if (buildingId != null) {
+//
+//        }
+
         buildingRepository.save(buildingEntity);
     }
 
@@ -97,11 +101,6 @@ public class BuildingService implements IBuildingService {
                 throw new MyException("Building not found!");
             }
 
-            List<BuildingEntity> buildings = buildingRepository.findAllById(ids);
-            for (BuildingEntity building : buildings) {
-                building.getStaffs().clear();
-                buildingRepository.save(building);
-            }
             buildingRepository.deleteByIdIn(ids);
         }
     }
