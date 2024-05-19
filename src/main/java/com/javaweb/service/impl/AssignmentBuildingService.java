@@ -28,9 +28,6 @@ public class AssignmentBuildingService implements IAssignmentBuildingService {
         BuildingEntity building = buildingRepository.findById(assignmentBuildingDTO.getBuildingId())
                 .orElseThrow(() -> new MyException("Building Not Found"));
 
-        building.getStaffs().clear();;
-        buildingRepository.save(building);
-
         List<UserEntity> staffs = userRepository.findAllById(assignmentBuildingDTO.getStaffs());
         building.setStaffs(staffs);
 
