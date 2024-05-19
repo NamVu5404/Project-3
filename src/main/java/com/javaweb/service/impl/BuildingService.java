@@ -2,12 +2,12 @@ package com.javaweb.service.impl;
 
 import com.javaweb.converter.BuildingConverter;
 import com.javaweb.entity.BuildingEntity;
+import com.javaweb.entity.UserEntity;
 import com.javaweb.exception.MyException;
 import com.javaweb.model.dto.BuildingDTO;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.model.response.BuildingSearchResponse;
 import com.javaweb.repository.BuildingRepository;
-import com.javaweb.repository.RentAreaRepository;
 import com.javaweb.service.IBuildingService;
 import com.javaweb.utils.UploadFileUtils;
 import org.apache.tomcat.util.codec.binary.Base64;
@@ -25,9 +25,6 @@ public class BuildingService implements IBuildingService {
 
     @Autowired
     private BuildingRepository buildingRepository;
-
-    @Autowired
-    private RentAreaRepository rentAreaRepository;
 
     @Autowired
     private BuildingConverter buildingConverter;
@@ -69,9 +66,12 @@ public class BuildingService implements IBuildingService {
         }
         saveThumbnail(buildingDTO, buildingEntity);
 
-//        if (buildingId != null) {
-//
-//        }
+        if (buildingId != null) {
+            List<UserEntity> staffs = buildingRepository.findById(buildingId)
+                    .orElseThrow(() -> new MyException("Building not found!"))
+                    .getStaffs();
+            buildingEntity.setStaffs(staffs);
+        }
 
         buildingRepository.save(buildingEntity);
     }
