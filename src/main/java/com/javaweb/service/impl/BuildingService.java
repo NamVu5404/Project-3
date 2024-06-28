@@ -4,15 +4,17 @@ import com.javaweb.converter.BuildingConverter;
 import com.javaweb.entity.BuildingEntity;
 import com.javaweb.entity.UserEntity;
 import com.javaweb.exception.MyException;
+import com.javaweb.model.dto.AssignmentBuildingDTO;
 import com.javaweb.model.dto.BuildingDTO;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.model.response.BuildingSearchResponse;
 import com.javaweb.repository.BuildingRepository;
+import com.javaweb.repository.UserRepository;
 import com.javaweb.service.IBuildingService;
 import com.javaweb.utils.UploadFileUtils;
+import lombok.AllArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,20 +23,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@AllArgsConstructor
 public class BuildingService implements IBuildingService {
 
-    @Autowired
-    private BuildingRepository buildingRepository;
-
-    @Autowired
-    private BuildingConverter buildingConverter;
-
-    @Autowired
-    private UploadFileUtils uploadFileUtils;
+    private final BuildingRepository buildingRepository;
+    private final BuildingConverter buildingConverter;
+    private final UploadFileUtils uploadFileUtils;
+    private final UserRepository userRepository;
 
     @Override
-    public List<BuildingSearchResponse> findAll(BuildingSearchRequest buildingSearchRequest, Pageable pageable) {
-        List<BuildingEntity> buildingEntities = buildingRepository.findAll(buildingSearchRequest, pageable);
+    public List<BuildingSearchResponse> findAll(BuildingSearchRequest buildingSearchRequest) {
+        List<BuildingEntity> buildingEntities = buildingRepository.findAll(buildingSearchRequest);
         List<BuildingSearchResponse> result = new ArrayList<>();
 
         for (BuildingEntity item : buildingEntities) {
@@ -108,6 +107,18 @@ public class BuildingService implements IBuildingService {
     @Override
     public int countTotalItem(BuildingSearchRequest builder) {
         return buildingRepository.countTotalItem(builder);
+    }
+
+    @Transactional
+    @Override
+    public void updateAssignmentBuilding(AssignmentBuildingDTO assignmentBuildingDTO) {
+        BuildingEntity building = buildingRepository.findById(assignmentBuildingDTO.getBuildingId())
+                .orElseThrow(() -> new MyException("Building Not Found"));
+
+        List<UserEntity> staffs = userRepository.findAllById(assignmentBuildingDTO.getStaffs());
+        building.setStaffs(staffs);
+
+        buildingRepository.save(building);
     }
 
 }

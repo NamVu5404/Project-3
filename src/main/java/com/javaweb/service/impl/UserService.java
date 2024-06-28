@@ -10,9 +10,11 @@ import com.javaweb.model.dto.UserDTO;
 import com.javaweb.model.response.ResponseDTO;
 import com.javaweb.model.response.StaffResponseDTO;
 import com.javaweb.repository.BuildingRepository;
+import com.javaweb.repository.CustomerRepository;
 import com.javaweb.repository.RoleRepository;
 import com.javaweb.repository.UserRepository;
 import com.javaweb.service.IUserService;
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,22 +31,15 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Service
+@AllArgsConstructor
 public class UserService implements IUserService {
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private RoleRepository roleRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserConverter userConverter;
-
-    @Autowired
-    private BuildingRepository buildingRepository;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserConverter userConverter;
+    private final BuildingRepository buildingRepository;
+    private final CustomerRepository customerRepository;
 
     @Override
     public UserDTO findOneByUserNameAndStatus(String name, int status) {
@@ -190,8 +185,8 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public ResponseDTO listStaff(Long buildingId) {
-        List<Long> assignedStaffIds = getAssignedStaffIds(buildingId);
+    public ResponseDTO listStaffBuilding(Long buildingId) {
+        List<Long> assignedStaffIds = getAssignedStaffIdsBuilding(buildingId);
         List<StaffResponseDTO> staffAssignment = getStaffAssignment(assignedStaffIds);
 
         ResponseDTO result = new ResponseDTO();
@@ -200,10 +195,28 @@ public class UserService implements IUserService {
         return result;
     }
 
-    private List<Long> getAssignedStaffIds(Long buildingId) {
+    @Override
+    public ResponseDTO listStaffCustomer(Long customerId) {
+        List<Long> assignedStaffIds = getAssignedStaffIdsCustomer(customerId);
+        List<StaffResponseDTO> staffAssignment = getStaffAssignment(assignedStaffIds);
+
+        ResponseDTO result = new ResponseDTO();
+        result.setData(staffAssignment);
+        result.setMessage("Successfully loaded staffs");
+        return result;
+    }
+
+    private List<Long> getAssignedStaffIdsBuilding(Long buildingId) {
         return buildingRepository.findById(buildingId)
                 .orElseThrow(() -> new MyException("Building not found!"))
                 .getStaffs().stream().map(UserEntity::getId)
+                .collect(Collectors.toList());
+    }
+
+    private List<Long> getAssignedStaffIdsCustomer(Long customerId) {
+        return customerRepository.findById(customerId)
+                .orElseThrow(() -> new MyException("Customer not found!"))
+                .getUsers().stream().map(UserEntity::getId)
                 .collect(Collectors.toList());
     }
 

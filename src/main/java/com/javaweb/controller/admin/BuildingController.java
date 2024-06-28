@@ -6,11 +6,11 @@ import com.javaweb.enums.typeCode;
 import com.javaweb.model.dto.BuildingDTO;
 import com.javaweb.model.request.BuildingSearchRequest;
 import com.javaweb.model.response.BuildingSearchResponse;
+import com.javaweb.security.utils.SecurityUtils;
 import com.javaweb.service.IBuildingService;
 import com.javaweb.service.IUserService;
 import com.javaweb.utils.DisplayTagUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,7 +34,11 @@ public class BuildingController {
         ModelAndView mav = new ModelAndView("admin/building/list");
         DisplayTagUtils.of(request, model);
 
-        List<BuildingSearchResponse> buildings = buildingService.findAll(model, PageRequest.of(model.getPage() - 1, model.getMaxPageItems()));
+        if (SecurityUtils.getAuthorities().contains("ROLE_STAFF")) {
+            Long staffId = SecurityUtils.getPrincipal().getId();
+            model.setStaffId(staffId);
+        }
+        List<BuildingSearchResponse> buildings = buildingService.findAll(model);
         model.setListResult(buildings);
         model.setTotalItems(buildingService.countTotalItem(model));
 

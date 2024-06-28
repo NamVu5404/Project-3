@@ -293,19 +293,21 @@
                                 <label class="col-xs-3"></label>
 
                                 <div class="col-sm-9">
-                                    <c:if test="${empty model.id}">
-                                        <button type="button" class="btn btn-sm btn-primary"
-                                                id="btnAddOrUpdateBuilding">
-                                            Thêm tòa nhà
-                                        </button>
-                                    </c:if>
+                                    <security:authorize access="hasRole('MANAGER')">
+                                        <c:if test="${empty model.id}">
+                                            <button type="button" class="btn btn-sm btn-primary"
+                                                    id="btnAddOrUpdateBuilding">
+                                                Thêm tòa nhà
+                                            </button>
+                                        </c:if>
 
-                                    <c:if test="${not empty model.id}">
-                                        <button type="button" class="btn btn-sm btn-warning"
-                                                id="btnAddOrUpdateBuilding">
-                                            Sửa tòa nhà
-                                        </button>
-                                    </c:if>
+                                        <c:if test="${not empty model.id}">
+                                            <button type="button" class="btn btn-sm btn-warning"
+                                                    id="btnAddOrUpdateBuilding">
+                                                Sửa tòa nhà
+                                            </button>
+                                        </c:if>
+                                    </security:authorize>
 
                                     <a href="/admin/building-list">
                                         <button type="button" class="btn btn-sm btn-primary">

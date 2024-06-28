@@ -162,11 +162,13 @@
                                                 </div>
 
                                                 <div class="col-sm-2">
-                                                    <label>Nhân viên phụ trách</label>
-                                                    <form:select class="form-control" path="staffId">
-                                                        <form:option value="" label="---Chọn nhân viên---"/>
-                                                        <form:options items="${staffs}"/>
-                                                    </form:select>
+                                                    <security:authorize access="hasRole('MANAGER')">
+                                                        <label>Nhân viên phụ trách</label>
+                                                        <form:select class="form-control" path="staffId">
+                                                            <form:option value="" label="---Chọn nhân viên---"/>
+                                                            <form:options items="${staffs}"/>
+                                                        </form:select>
+                                                    </security:authorize>
                                                 </div>
                                             </div>
                                         </div>
@@ -195,31 +197,34 @@
                         </div>
 
                         <div class="pull-right">
-                            <a href="/admin/building-edit">
-                                <button type="button" title="Thêm tòa nhà" class="btn btn-success">
+                            <security:authorize access="hasRole('MANAGER')">
+                                <a href="/admin/building-edit">
+                                    <button type="button" title="Thêm tòa nhà" class="btn btn-success">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                             fill="currentColor"
+                                             class="bi bi-building-add" viewBox="0 0 16 16">
+                                            <path
+                                                    d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0"/>
+                                            <path
+                                                    d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"/>
+                                            <path
+                                                    d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+                                        </svg>
+                                    </button>
+                                </a>
+
+                                <button type="button" title="Xóa tất cả tòa nhà" class="btn btn-danger"
+                                        id="btnDeleteBuildings">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                         class="bi bi-building-add" viewBox="0 0 16 16">
-                                        <path
-                                                d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0"/>
+                                         class="bi bi-building-dash" viewBox="0 0 16 16">
+                                        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"/>
                                         <path
                                                 d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"/>
                                         <path
                                                 d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
                                     </svg>
                                 </button>
-                            </a>
-
-                            <button type="button" title="Xóa tất cả tòa nhà" class="btn btn-danger"
-                                    id="btnDeleteBuildings">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-building-dash" viewBox="0 0 16 16">
-                                    <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"/>
-                                    <path
-                                            d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v6.5a.5.5 0 0 1-1 0V1H3v14h3v-2.5a.5.5 0 0 1 .5-.5H8v4H3a1 1 0 0 1-1-1z"/>
-                                    <path
-                                            d="M4.5 2a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-6 3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm3 0a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
-                                </svg>
-                            </button>
+                            </security:authorize>
                         </div>
                     </div>
                 </div>
@@ -257,10 +262,12 @@
                         <display:column headerClass="text-left" property="serviceFee" title="Phí dịch vụ"/>
                         <display:column headerClass="text-left" property="brokerageFee" title="Phí MG"/>
                         <display:column headerClass="col-actions" title="Thao tác">
-                            <button class="btn btn-sm btn-success" title="Giao tòa nhà"
-                                    onclick="assignmentBuilding(${tableList.id})">
-                                <i class="ace-icon glyphicon glyphicon-list"></i>
-                            </button>
+                            <security:authorize access="hasRole('MANAGER')">
+                                <button class="btn btn-sm btn-success" title="Giao tòa nhà"
+                                        onclick="assignmentBuilding(${tableList.id})">
+                                    <i class="ace-icon glyphicon glyphicon-list"></i>
+                                </button>
+                            </security:authorize>
 
                             <a href="/admin/building-edit-${tableList.id}">
                                 <button class="btn btn-sm btn-info" title="Sửa tòa nhà">
@@ -268,10 +275,12 @@
                                 </button>
                             </a>
 
-                            <button class="btn btn-sm btn-danger" title="Xóa tòa nhà"
-                                    onclick="btnDeleteBuilding(${tableList.id})">
-                                <i class="ace-icon glyphicon glyphicon-trash"></i>
-                            </button>
+                            <security:authorize access="hasRole('MANAGER')">
+                                <button class="btn btn-sm btn-danger" title="Xóa tòa nhà"
+                                        onclick="btnDeleteBuilding(${tableList.id})">
+                                    <i class="ace-icon glyphicon glyphicon-trash"></i>
+                                </button>
+                            </security:authorize>
                         </display:column>
                     </display:table>
                 </div>
@@ -364,7 +373,7 @@
         });
     });
 
-    $('#btnDeleteBuildings').click(function(e) {
+    $('#btnDeleteBuildings').click(function (e) {
         e.preventDefault();
         var data = {};
         data.buildingIds = $('tbody input[type=checkbox]:checked').map(function () {

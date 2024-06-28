@@ -91,10 +91,8 @@ public class BuildingRepositoryImpl implements BuildingRepositoryCustom {
     }
 
     @Override
-    public List<BuildingEntity> findAll(BuildingSearchRequest builder, Pageable pageable) {
-        StringBuilder sql = new StringBuilder(buildQueryFilter(builder))
-                .append(" LIMIT ").append(pageable.getPageSize()).append("\n")
-                .append(" OFFSET ").append(pageable.getOffset());
+    public List<BuildingEntity> findAll(BuildingSearchRequest builder) {
+        StringBuilder sql = new StringBuilder(buildQueryFilter(builder));
 
         Query query = entityManager.createNativeQuery(sql.toString(), BuildingEntity.class);
         return query.getResultList();

@@ -12,11 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 public class BuildingEntity extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
     @Column(name = "name")
     private String name;
 

@@ -1,11 +1,14 @@
 package com.javaweb.controller.web;
 
+import com.javaweb.constant.SystemConstant;
+import com.javaweb.model.dto.CustomerDTO;
 import com.javaweb.model.request.BuildingSearchRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -26,32 +29,27 @@ public class HomeController {
 
     @GetMapping(value="/gioi-thieu")
     public ModelAndView introducceBuiding(){
-        ModelAndView mav = new ModelAndView("web/introduce");
-        return mav;
+        return new ModelAndView("web/introduce");
     }
 
     @GetMapping(value="/san-pham")
     public ModelAndView buidingList(){
-        ModelAndView mav = new ModelAndView("/web/list");
-        return mav;
+        return new ModelAndView("/web/list");
     }
 
     @GetMapping(value="/tin-tuc")
     public ModelAndView news(){
-        ModelAndView mav = new ModelAndView("/web/news");
-        return mav;
+        return new ModelAndView("/web/news");
     }
 
     @GetMapping(value="/lien-he")
-    public ModelAndView contact(){
-        ModelAndView mav = new ModelAndView("/web/contact");
-        return mav;
+    public ModelAndView contact(@ModelAttribute(SystemConstant.MODEL) CustomerDTO model){
+        return new ModelAndView("/web/contact");
     }
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView login() {
-		ModelAndView mav = new ModelAndView("login");
-		return mav;
+        return new ModelAndView("login");
 	}
 
 	@RequestMapping(value = "/access-denied", method = RequestMethod.GET)
