@@ -72,7 +72,15 @@ public class CustomerController {
         Long staffId = SecurityUtils.getPrincipal().getId();
         List<UserEntity> staffs = customerService.findById(id).getUsers();
         List<Long> staffIds = staffs.stream().map(UserEntity::getId).collect(Collectors.toList());
-        staffIds.add(1L);
+        // add manager id
+        List<String> authorities = SecurityUtils.getAuthorities();
+        for (String authority : authorities) {
+            if (authority.equals("ROLE_MANAGER")) {
+                Long managerId = SecurityUtils.getPrincipal().getId();
+                staffIds.add(managerId);
+                break;
+            }
+        }
 
         if (staffIds.contains(staffId)) {
             ModelAndView mav = new ModelAndView("admin/customer/edit");
