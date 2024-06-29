@@ -2,6 +2,7 @@ package com.javaweb.controller.admin;
 
 import com.javaweb.constant.SystemConstant;
 import com.javaweb.entity.CustomerEntity;
+import com.javaweb.entity.UserEntity;
 import com.javaweb.enums.Status;
 import com.javaweb.enums.TransactionType;
 import com.javaweb.model.dto.CustomerDTO;
@@ -13,6 +14,8 @@ import com.javaweb.service.ITransactionService;
 import com.javaweb.service.IUserService;
 import com.javaweb.utils.DisplayTagUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController(value = "customerControllerOfAdmin")
 public class CustomerController {
@@ -64,16 +69,23 @@ public class CustomerController {
 
     @GetMapping(value = "/admin/customer-edit-{id}")
     public ModelAndView customerEdit(@PathVariable Long id) {
-        ModelAndView mav = new ModelAndView("admin/customer/edit");
-        List<TransactionResponse> listCSKH = transactionService.findByCodeAndCustomerId("CSKH", id);
-        List<TransactionResponse> listDDX = transactionService.findByCodeAndCustomerId("DDX", id);
+        Long staffId = SecurityUtils.getPrincipal().getId();
+        List<UserEntity> staffs = customerService.findById(id).getUsers();
+        List<Long> staffIds = staffs.stream().map(UserEntity::getId).collect(Collectors.toList());
 
-        mav.addObject("status", Status.type());
-        mav.addObject(SystemConstant.MODEL, customerService.findById(id));
-        mav.addObject("transactionType", TransactionType.transactionType());
-        mav.addObject("transactionListCSKH", listCSKH);
-        mav.addObject("transactionListDDX", listDDX);
+        if (staffIds.contains(staffId)) {
+            ModelAndView mav = new ModelAndView("admin/customer/edit");
+            List<TransactionResponse> listCSKH = transactionService.findByCodeAndCustomerId("CSKH", id);
+            List<TransactionResponse> listDDX = transactionService.findByCodeAndCustomerId("DDX", id);
 
-        return mav;
+            mav.addObject("status", Status.type());
+            mav.addObject(SystemConstant.MODEL, customerService.findById(id));
+            mav.addObject("transactionType", TransactionType.transactionType());
+            mav.addObject("transactionListCSKH", listCSKH);
+            mav.addObject("transactionListDDX", listDDX);
+
+            return mav;
+        }
+        return null;
     }
 }
