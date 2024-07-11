@@ -2,11 +2,9 @@ package com.javaweb.api.admin;
 
 import com.javaweb.model.dto.AssignmentCustomerDTO;
 import com.javaweb.model.dto.CustomerDTO;
-import com.javaweb.model.dto.TransactionDTO;
 import com.javaweb.model.response.ResponseDTO;
-import com.javaweb.service.impl.CustomerService;
-import com.javaweb.service.impl.TransactionService;
-import com.javaweb.service.impl.UserService;
+import com.javaweb.service.ICustomerService;
+import com.javaweb.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,12 +15,10 @@ import java.util.List;
 public class CustomerAPI {
 
     @Autowired
-    private CustomerService customerService;
+    private ICustomerService customerService;
 
     @Autowired
-    private UserService userService;
-    @Autowired
-    private TransactionService transactionService;
+    private IUserService userService;
 
     @PostMapping
     public String addOrUpdateCustomer(@RequestBody CustomerDTO customerDTO) {
@@ -44,15 +40,5 @@ public class CustomerAPI {
     @PutMapping
     public void updateAssignmentCustomer(@RequestBody AssignmentCustomerDTO assignmentCustomerDTO) {
         customerService.updateAssignmentCustomer(assignmentCustomerDTO);
-    }
-
-    @GetMapping("/{id}/transaction-detail")
-    public TransactionDTO loadTransactionDetail(@PathVariable Long id) {
-        return transactionService.loadTransactionDetail(id);
-    }
-
-    @PostMapping("/transaction")
-    public void addOrUpdateTransaction(@RequestBody TransactionDTO transactionDTO) {
-        transactionService.addOrUpdateTransaction(transactionDTO);
     }
 }

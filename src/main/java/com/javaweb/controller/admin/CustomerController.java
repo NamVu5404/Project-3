@@ -14,6 +14,7 @@ import com.javaweb.service.ITransactionService;
 import com.javaweb.service.IUserService;
 import com.javaweb.utils.DisplayTagUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -70,19 +71,15 @@ public class CustomerController {
     @GetMapping(value = "/admin/customer-edit-{id}")
     public ModelAndView customerEdit(@PathVariable Long id) {
         Long staffId = SecurityUtils.getPrincipal().getId();
-        List<UserEntity> staffs = customerService.findById(id).getUsers();
-        List<Long> staffIds = staffs.stream().map(UserEntity::getId).collect(Collectors.toList());
+        CustomerEntity customer = customerService.findById(id);
+        List<Long> staffIds = customer.getUsers().stream().map(UserEntity::getId).collect(Collectors.toList());
         // add manager id
-        List<String> authorities = SecurityUtils.getAuthorities();
-        for (String authority : authorities) {
-            if (authority.equals("ROLE_MANAGER")) {
-                Long managerId = SecurityUtils.getPrincipal().getId();
-                staffIds.add(managerId);
-                break;
-            }
+        if (SecurityUtils.getAuthorities().contains("ROLE_MANAGER")) {
+            Long managerId = SecurityUtils.getPrincipal().getId();
+            staffIds.add(managerId);
         }
 
-        if (staffIds.contains(staffId)) {
+        if (customer.getIsActive() == 1 && staffIds.contains(staffId)) {
             ModelAndView mav = new ModelAndView("admin/customer/edit");
             List<TransactionResponse> listCSKH = transactionService.findByCodeAndCustomerId("CSKH", id);
             List<TransactionResponse> listDDX = transactionService.findByCodeAndCustomerId("DDX", id);
@@ -94,7 +91,8 @@ public class CustomerController {
             mav.addObject("transactionListDDX", listDDX);
 
             return mav;
+        } else {
+            throw new AccessDeniedException("Bạn không có quyền truy cập thông tin khách hàng này!");
         }
-        return null;
     }
 }

@@ -2,6 +2,7 @@
 <%@include file="/common/taglib.jsp" %>
 <c:url var="customerEditUrl" value="/admin/customer-edit"/>
 <c:url var="customerAPI" value="/api/customers/"/>
+<c:url var="transactionAPI" value="/api/transactions/"/>
 <html>
 <head>
     <title>Thông tin khách hàng</title>
@@ -102,14 +103,14 @@
                                 <label class="col-xs-3"></label>
 
                                 <div class="col-sm-9">
-                                    <security:authorize access="hasRole('MANAGER')">
-                                        <c:if test="${empty model.id}">
-                                            <button type="button" class="btn btn-sm btn-primary"
-                                                    id="btnAddOrUpdateCustomer">
-                                                Thêm khách hàng
-                                            </button>
-                                        </c:if>
+                                    <c:if test="${empty model.id}">
+                                        <button type="button" class="btn btn-sm btn-primary"
+                                                id="btnAddOrUpdateCustomer">
+                                            Thêm khách hàng
+                                        </button>
+                                    </c:if>
 
+                                    <security:authorize access="hasRole('MANAGER')">
                                         <c:if test="${not empty model.id}">
                                             <button type="button" class="btn btn-sm btn-warning"
                                                     id="btnAddOrUpdateCustomer">
@@ -260,6 +261,7 @@
         $('#transactionTypeModal').modal();
         $('#customerId').val(customerId);
         $('#transactionDetail').val("");
+        $('#transactionId').val("");
         $('#code').val(code);
     }
 
@@ -274,7 +276,7 @@
     const loadTransactionDetail = (transactionId, customerId) => {
         $.ajax({
             type: "GET",
-            url: "${customerAPI}" + transactionId + '/transaction-detail',
+            url: "${transactionAPI}" + transactionId,
             dataType: "JSON",
             success: function (response) {
                 $('#transactionDetail').val(response.note);
@@ -299,7 +301,7 @@
     const addTransaction = (data) => {
         $.ajax({
             type: "POST",
-            url: "${customerAPI}" + "transaction",
+            url: "${transactionAPI}",
             data: JSON.stringify(data),
             contentType: "application/json",
             success: () => {
@@ -328,11 +330,11 @@
         } else if (!data.status || data.status.trim().length === 0) {
             return alert("Trạng thái không được thiếu");
         } else {
-            btnAddOrUpdate(data);
+            addOrUpdateCustomer(data);
         }
     })
 
-    const btnAddOrUpdate = (data) => {
+    const addOrUpdateCustomer = (data) => {
         $.ajax({
             type: "POST",
             url: "${customerAPI}",
